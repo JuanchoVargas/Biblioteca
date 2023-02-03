@@ -10,14 +10,14 @@ Requisitos para la ejecución:
 
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
-### Vue 3.0
+#### Vue 3.0
 
 https://vuejs.org
 
-### Vite JS
+#### Vite JS
 
 https://vitejs.dev
 
-### Node JS v16.4.2 - npm v7.18.1
+#### Node JS v16.4.2 - npm v7.18.1
 
 https://nodejs.org
