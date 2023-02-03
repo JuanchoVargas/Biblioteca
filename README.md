@@ -6,7 +6,7 @@ https://github.com/JuanchoVargas/Biblioteca
 
 Requisitos para la ejecución:
 
-### DotNetCore 6.0
+#### DotNetCore 6.0
 
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
