@@ -18,6 +18,6 @@ https://vuejs.org
 
 https://vitejs.dev
 
-### Node JS
+### Node v16.4.2 - NPM v7.18.1
 
 https://nodejs.org
