@@ -1,0 +1,22 @@
+nvm = node version manager
+node 
+npm = node package manager
+
+Comandos:
+dotnet --list-sdks
+dotnet tool install --global dotnet-ef
+dotnet ef add migration "Nombre"
+dotnet ef database update
+
+202301142300:
+Creating build/test tasks for dotnet core app in VSCode
+https://swaminathanvetri.in/2016/07/06/creating-buildtest-tasks-for-dotnet-core-app-in-vscode
+
+202301142309:
+VSCode launch.json debug and open specific url
+https://stackoverflow.com/a/58406148
+
+202301142354:
+Resetear gitignore
+git rm -r --cached .
+git add .;git commit -am "Varios";git push
