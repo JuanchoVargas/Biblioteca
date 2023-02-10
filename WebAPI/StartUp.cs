@@ -33,9 +33,9 @@ namespace WebAPI
 
       app.UseCors(options =>
       {
-        options.WithOrigins("http://127.0.0.1:5173");
-        options.AllowAnyMethod();
-        options.AllowAnyHeader();
+        options.WithOrigins("*")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
       });
 
 

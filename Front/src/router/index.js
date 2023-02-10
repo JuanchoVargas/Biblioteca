@@ -16,12 +16,12 @@ const router = createRouter({
     {
 			name: "autor-editar",
 			path: "/autor/editar/:id",
-			component: () => import("@/components/admin/autor/editar.vue"),
+			component: () => import("@/components/admin/autor/gestionar.vue"),
 		},
     {
-			path: "/autor/crear",
 			name: "autor-crear",
-			component: () => import("@/components/admin/autor/crear.vue"),
+			path: "/autor/crear",
+			component: () => import("@/components/admin/autor/gestionar.vue"),
 		},
     {
 			path: "/editorial",

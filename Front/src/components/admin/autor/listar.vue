@@ -1,54 +1,20 @@
 <script setup>
-/**
- * Imports
- */
-import axios from "axios";
 import { ref, onMounted } from "vue";
-
-/**
- * Variables
- */
+import { useAutorStore  } from "@/stores";
+const autorStore = useAutorStore();
 let autores = ref([]);
-
-/**
- * Metodos
- */
-onMounted(() => {
-  console.log("Montado");
-  consultarAutores();
+onMounted(async () => {
+  console.log("autorStore =>", autorStore);
+  autores.value = await autorStore.consultar();
 });
-
-let consultarAutores = async () => {
-  axios
-    .get("http://localhost:5000/api/autores")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      autores.value = datosRespuesta.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let borrarAutor = async (autor) => {
+let borrar = async (item) => {
   const confirmacion = confirm(
-    `Esta seguro que desea borrar el autor "${autor.nombre}"?`
+    `Esta seguro que desea borrar "${item.nombre}"?`
   );
   if (confirmacion) {
-    // this.autores = this.autores.filter((user) => user.id !== id);
-    axios
-      .delete("https://localhost:5000/api/autores/" + autor.id, {
-        id: autores.id
-      })
-      .then((datosEliminados) => {
-        consultarAutores();
-        console.log(datosEliminados);
-        alert("Se ha eliminado el autor");
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Se presento un error");
-      });
+    let result = await autorStore.borrar(item.id);
+    autorStore.limpiar();
+    autores.value = await autorStore.consultar();
   }
 };
 </script>
@@ -88,7 +54,7 @@ let borrarAutor = async (autor) => {
                   >
                   <button
                     type="button"
-                    @click.prevent="borrarAutor(autor)"
+                    @click.prevent="borrar(autor)"
                     class="btn btn-danger"
                   >
                     Borrar

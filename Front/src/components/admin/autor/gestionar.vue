@@ -1,71 +1,41 @@
 <script setup>
-
-
-/**
- * Imports
- */
-import axios from "axios";
 import { ref, onMounted } from "vue";
+import { useAutorStore  } from "@/stores";
 import { useRoute, useRouter } from "vue-router";
+const autorStore = useAutorStore();
 
-
-/**
- * Variables
- */
-let autores = ref([]);
+let accion = ref(null);
 let id = ref(null);
 const route = useRoute();
 const router = useRouter();
 let autor = ref(null);
 
-
-/**
- * Metodos
- */
-onMounted(() => {
+onMounted(async () => {
   console.log("Montado");
   id.value = route.params.id;
-  console.log(id.value);
-  consultarAutor(id.value);
+  console.log(id.value);  
+  if (id.value != null){
+    accion = "Editar";
+    autor.value = await autorStore.consultarAutor(id.value);
+  } else {
+    accion = "Crear";
+    autor.value ={
+      id:0,
+      nombre:  ""
+    }
+  }
 });
 
-let consultarAutor = async (id) => {
-  axios
-    .get("https://localhost:5000/api/autores")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      autores.value = datosRespuesta.data;
-      autor.value = autores.value.find((o) => o.id == id);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
 let guardarAutor = async () => {
-  const confirmacion = confirm(
-    `Esta seguro que desea actualizar el autor "${autor.value.nombre}"?`
-  );
-  if (confirmacion) {
-    axios
-      .put("https://localhost:5000/api/autores/", autor.value)
-      .then((datos) => {
-        console.log(datos);
-        alert("Se ha actualizado el autor");
-        router.push({ name: 'autores'});
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Se presento un error: " + err.message);
-      });
-  }
+    let result = await autorStore.guardar(autor.value);
+    router.push({ name: 'autores'});
 };
 </script>
 
 <template>
   <div class="container">
     <div class="card" v-if="autor">
-      <div class="card-header">Editar Autor: {{ autor }}</div>
+      <div class="card-header"><h3>{{ accion }} Autor {{ autor.nombre }}</h3></div>
       <div class="card-body">
         <form v-on:submit.prevent="actualizarRegistro">
           <div class="form-group">

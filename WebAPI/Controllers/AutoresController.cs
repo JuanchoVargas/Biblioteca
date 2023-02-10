@@ -18,11 +18,12 @@ namespace WebAPI.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Autor>>> Obtener()
+    public List<Autor> Obtener()
     {
-      return await context.Autor.ToListAsync();
+      return context.Autor.ToList();
       // return await context.Autores.Include(x => x.Libros).ToListAsync();
     }
+
     // api/autores/:id
     [HttpGet("{id:int}")]
     public ActionResult ObtenerPorId(int id)
