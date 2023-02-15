@@ -1,15 +1,24 @@
 <script setup>
+/**
+ * Imports
+ */
 import { ref, onMounted } from "vue";
 import { useAutorStore  } from "@/stores";
 import { useRoute, useRouter } from "vue-router";
-const autorStore = useAutorStore();
 
+/**
+ * Variables
+ */
+const autorStore = useAutorStore();
 let accion = ref(null);
 let id = ref(null);
 const route = useRoute();
 const router = useRouter();
 let autor = ref(null);
 
+/**
+ * Metodos
+ */
 onMounted(async () => {
   console.log("Montado");
   id.value = route.params.id;

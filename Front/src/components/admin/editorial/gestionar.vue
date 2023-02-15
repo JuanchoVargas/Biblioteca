@@ -2,68 +2,50 @@
 /**
  * Imports
  */
-
-import axios from "axios";
 import { ref, onMounted } from "vue";
+import { useEditorialStore  } from "@/stores";
 import { useRoute, useRouter } from "vue-router";
+
 /**
  * Variables
  */
-
-let editoriales = ref([]);
+const editorialStore = useEditorialStore();
+let accion = ref(null);
 let id = ref(null);
 const route = useRoute();
 const router = useRouter();
 let editorial = ref(null);
 
+
 /**
  * Metodos
  */
-
-onMounted(() => {
+onMounted(async () => {
   console.log("Montado");
   id.value = route.params.id;
-  console.log(id.value);
-  consultarEditoriales(id.value);
+  console.log(id.value);  
+  if (id.value != null){
+    accion = "Editar";
+    editorial.value = await editorialStore.consultarEditorial(id.value);
+  } else {
+    accion = "Crear";
+    editorial.value ={
+      id:0,
+      nombre:  ""
+    }
+  }
 });
 
-let consultarEditoriales = async (id) => {
-  axios
-    .get("https://localhost:5000/api/editoriales")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      editoriales.value = datosRespuesta.data;
-      editorial.value = editoriales.value.find((o) => o.id == id);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let actualizarEditorial = async () => {
-  const confirmacion = confirm(
-    `Esta seguro que desea actualizar la Editorial "${editorial.value.nombre}"?`
-  );
-  if (confirmacion) {
-    axios
-      .put("https://localhost:5000/api/editoriales/"+editorial.value.id, editorial.value)
-      .then((datos) => {
-        console.log(datos);
-        alert("Se ha actualizado la editorial");
-        router.push({ name: 'editoriales'});
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Se presento un error: " + err.message);
-      });
-  }
+let guardarEditorial = async () => {
+    let result = await editorialStore.guardar(editorial.value);
+    router.push({ name: 'editoriales'});
 };
 </script>
 
 <template>
   <div class="container">
     <div class="card" v-if="editorial">
-      <div class="card-header">Editar Editorial: {{ editorial }}</div>
+      <div class="card-header"><h3>{{ accion }} Editorial {{ editorial.nombre }}</h3></div>
       <div class="card-body">
         <form v-on:submit.prevent="actualizarRegistro">
           <div class="form-group">
@@ -86,7 +68,7 @@ let actualizarEditorial = async () => {
           <div class="btn-group" role="group" aria-label="">
             <button
               :disabled="editorial.nombre.length < 4"
-              @click.prevent="actualizarEditorial"
+              @click.prevent="guardarEditorial"
               class="btn btn-danger"
             >
               Guardar

@@ -45,4 +45,5 @@ export const useAutorStore = defineStore({
 			});
 		},
 	},
+	persist: true,
 });

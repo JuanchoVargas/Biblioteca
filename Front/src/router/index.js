@@ -31,12 +31,12 @@ const router = createRouter({
     {
 			name: "editorial-editar",
 			path: "/editorial/editar/:id",
-			component: () => import("@/components/admin/editorial/editar.vue"),
+			component: () => import("@/components/admin/editorial/gestionar.vue"),
 		},
     {
 			path: "/editorial/crear",
 			name: "editorial-crear",
-			component: () => import("@/components/admin/editorial/crear.vue"),
+			component: () => import("@/components/admin/editorial/gestionar.vue"),
 		},
     {
 			path: "/libro",
@@ -46,12 +46,12 @@ const router = createRouter({
     {
 			name: "libro-editar",
 			path: "/libro/editar/:id",
-			component: () => import("@/components/admin/libro/editar.vue"),
+			component: () => import("@/components/admin/libro/gestionar.vue"),
 		},
     {
 			path: "/libro/crear",
 			name: "libro-crear",
-			component: () => import("@/components/admin/libro/crear.vue"),
+			component: () => import("@/components/admin/libro/gestionar.vue"),
 		},
   ]
 })

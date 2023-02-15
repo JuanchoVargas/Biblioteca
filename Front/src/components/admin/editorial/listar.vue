@@ -2,51 +2,30 @@
 /**
  * Imports
  */
-import axios from "axios";
 import { ref, onMounted } from "vue";
+import { useEditorialStore } from "@/stores";
 
 /**
  * Variables
  */
+const editorialStore = useEditorialStore();
 let editoriales = ref([]);
-onMounted(() => {
-  console.log("Montado");
-  consultarEditoriales();
-});
 
 /**
  * Metodos
  */
-let consultarEditoriales = async () => {
-  axios
-    .get("https://localhost:5000/api/editoriales")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      editoriales.value = datosRespuesta.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let borrarEditorial = async (editorial) => {
+onMounted(async () => {
+  console.log("editorialStore =>", editorialStore);
+  editoriales.value = await editorialStore.consultar();
+});
+let borrar = async (item) => {
   const confirmacion = confirm(
-    `Esta seguro que desea borrar la editorial "${editorial.nombre}"?`
+    `Esta seguro que desea borrar "${item.nombre}"?`
   );
   if (confirmacion) {
-    axios
-      .delete("https://localhost:5000/api/editoriales/" + editorial.id, {
-        id: editorial.id,
-      })
-      .then((datosEliminados) => {
-        consultarEditoriales();
-        console.log(datosEliminados);
-        alert("Se ha eliminado la editorial");
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Se presento un error");
-      });
+    let result = await editorialStore.borrar(item.id);
+    editorialStore.limpiar();
+    editoriales.value = await editorialStore.consultar();
   }
 };
 </script>
@@ -81,14 +60,14 @@ let borrarEditorial = async (editorial) => {
                   <router-link
                     :to="{
                       name: 'editorial-editar',
-                      params: { id: editorial.id }
+                      params: { id: editorial.id },
                     }"
                     class="btn btn-warning"
                     >Editar</router-link
                   >
                   <button
                     type="button"
-                    @click.prevent="borrarEditorial(editorial)"
+                    @click.prevent="borrar(editorial)"
                     class="btn btn-danger"
                   >
                     Borrar

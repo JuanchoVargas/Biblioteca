@@ -1,8 +1,19 @@
 <script setup>
+/**
+ * Imports
+ */
 import { ref, onMounted } from "vue";
-import { useAutorStore  } from "@/stores";
+import { useAutorStore } from "@/stores";
+
+/**
+ * Variables
+ */
 const autorStore = useAutorStore();
 let autores = ref([]);
+
+/**
+ * Metodos
+ */
 onMounted(async () => {
   console.log("autorStore =>", autorStore);
   autores.value = await autorStore.consultar();

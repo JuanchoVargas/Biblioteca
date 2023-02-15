@@ -2,54 +2,31 @@
 /**
  * Imports
  */
-import axios from "axios";
 import { ref, onMounted } from "vue";
-
+import { useLibroStore } from "@/stores";
 /**
  * Variables
  */
+const libroStore = useLibroStore();
 let libros = ref([]);
-onMounted(() => {
-  console.log("Montado");
-  consultarLibros();
-});
-
-
 /**
  * Metodos
  */
-let consultarLibros = async () => {
-  axios
-    .get("https://localhost:5000/api/libros")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      libros.value = datosRespuesta.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let borrarLibro = async (libro) => {
+onMounted(async () => {
+  console.log("libroStore =>", libroStore);
+  libros.value = await libroStore.consultar();
+});
+let borrar = async (item) => {
   const confirmacion = confirm(
-    `Esta seguro que desea borrar el libro "${libro.titulo}"?`
+    `Esta seguro que desea borrar "${item.nombre}"?`
   );
   if (confirmacion) {
-    axios
-      .delete("https://localhost:5000/api/libros/" + libro.id, {
-        id: libros.id,
-      })
-      .then((datosEliminados) => {
-        consultarLibros();
-        console.log(datosEliminados);
-        alert("Se ha eliminado el Libro");
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Se presento un error");
-      });
+    let result = await libroStore.borrar(item.id);
+    libroStore.limpiar();
+    libros.value = await libroStore.consultar();
   }
 };
+
 </script>
 
 <template>
@@ -77,7 +54,7 @@ let borrarLibro = async (libro) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="libro in libros" key="autores.id">
+            <tr v-for="libro in libros" key="libros.id">
               <td scope="row">{{ libro.id }}</td>
               <td>{{ libro.titulo }}</td>
               <td>{{ libro.autor_id }}</td>
@@ -91,7 +68,7 @@ let borrarLibro = async (libro) => {
                   >
                   <button
                     type="button"
-                    @click.prevent="borrarLibro(libro)"
+                    @click.prevent="borrar(libro)"
                     class="btn btn-danger"
                   >
                     Borrar

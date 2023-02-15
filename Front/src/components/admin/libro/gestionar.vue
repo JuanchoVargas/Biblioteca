@@ -2,100 +2,57 @@
 /**
  * Imports
  */
-import axios from "axios";
 import { ref, onMounted } from "vue";
+import { useEditorialStore, useLibroStore, useAutorStore } from "@/stores";
 import { useRoute, useRouter } from "vue-router";
 
 /**
  * Variables
  */
-let libros = ref([]);
+let libroStore = useLibroStore();
+let editorialStore = useEditorialStore();
+let autorStore = useAutorStore();
 let id = ref(null);
+let accion = ref(null);
 const route = useRoute();
 const router = useRouter();
-let libro = ref({
-  id: 0,
-  editorial_id: 0,
-  autor_id: 0,
-  titulo: "",
-});
-
+let libro = ref(null);
 let autores = ref([]);
 let editoriales = ref([]);
 
 /**
  * Metodos
  */
-onMounted(() => {
+onMounted(async () => {
+  autores.value = await autorStore.consultar();
+  editoriales.value = await editorialStore.consultar();
   console.log("Montado");
   id.value = route.params.id;
   console.log(id.value);
-  consultarLibro(id.value);
-  consultarAutores();
-  consultarEditoriales();
+  if (id.value != null) {
+    accion = "Editar";
+    libro.value = await libroStore.consultarLibro(id.value);
+  } else {
+    accion = "Crear";
+    libro.value = {
+      id: 0,
+      editorial_id: 0,
+      autor_id: 0,
+      titulo: "",
+    };
+  }
 });
 
-let consultarAutores = async () => {
-  axios
-    .get("https://localhost:5000/api/autores")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      autores.value = datosRespuesta.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let consultarEditoriales = async () => {
-  axios
-    .get("https://localhost:5000/api/editoriales")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      editoriales.value = datosRespuesta.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let consultarLibro = async (id) => {
-  axios
-    .get("https://localhost:5000/api/libros")
-    .then((datosRespuesta) => {
-      console.log(datosRespuesta.data);
-      libros.value = datosRespuesta.data;
-      libro.value = libros.value.find((o) => o.id == id);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-let editarLibro = async () => {
-  const confirmacion = confirm(
-    `Esta seguro que desea actualizar el libro "${libro.value.titulo}"?`
-  );
-  if (confirmacion) {
-    axios
-      .put("https://localhost:5000/api/libros/" + libro.value.id, libro.value)
-      .then((datos) => {
-        console.log(datos);
-        alert("Se ha actualizado el Libro");
-        router.push({ name: "libros" });
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Se presento un error: " + err.message);
-      });
-  }
+let guardarLibro = async () => {
+    let result = await libroStore.guardar(libro.value);
+    router.push({ name: 'libros'});
 };
 </script>
 
 <template>
   <div class="container">
     <div class="card" v-if="libro">
-      <div class="card-header">Editar Libro: {{ libro }}</div>
+      <div class="card-header"><h3>{{ accion }} Libro {{ libro.nombre }}</h3></div>
       <div class="card-body">
         <form v-on:submit.prevent="actualizarRegistro">
           <div class="form-group">
@@ -164,7 +121,7 @@ let editarLibro = async () => {
           </div>
 
           <div class="btn-group" role="group" aria-label="">
-            <button @click.prevent="editarLibro" class="btn btn-danger">
+            <button @click.prevent="guardarLibro" class="btn btn-danger">
               Guardar
             </button>
             <router-link :to="{ name: 'libros' }" class="btn btn-warning"
