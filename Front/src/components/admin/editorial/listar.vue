@@ -4,13 +4,23 @@
  */
 import { ref, onMounted } from "vue";
 import { useEditorialStore } from "@/stores";
+import {
+  DxColumn,
+  DxDataGrid,
+  DxExport,
+  DxFilterRow,
+  DxGrouping,
+  DxGroupPanel,
+  DxPager,
+  DxPaging,
+  DxScrolling,
+} from "devextreme-vue/data-grid";
 
 /**
  * Variables
  */
 const editorialStore = useEditorialStore();
 let editoriales = ref([]);
-
 /**
  * Metodos
  */
@@ -18,16 +28,7 @@ onMounted(async () => {
   console.log("editorialStore =>", editorialStore);
   editoriales.value = await editorialStore.consultar();
 });
-let borrar = async (item) => {
-  const confirmacion = confirm(
-    `Esta seguro que desea borrar "${item.nombre}"?`
-  );
-  if (confirmacion) {
-    let result = await editorialStore.borrar(item.id);
-    editorialStore.limpiar();
-    editoriales.value = await editorialStore.consultar();
-  }
-};
+
 </script>
 
 <template>
@@ -43,40 +44,33 @@ let borrar = async (item) => {
           </div>
         </div>
       </div>
-      <div class="card-body">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID Editorial</th>
-              <th>Nombre</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="editorial in editoriales" key="editoriales.id">
-              <td scope="row">{{ editorial.id }}</td>
-              <td scope="row">{{ editorial.nombre }}</td>
-              <td>
-                <div class="btn-group" role="group" aria-label="">
-                  <router-link
-                    :to="{
-                      name: 'editorial-editar',
-                      params: { id: editorial.id },
-                    }"
-                    class="btn btn-warning"
-                    >Editar</router-link
-                  >
-                  <button
-                    type="button"
-                    @click.prevent="borrar(editorial)"
-                    class="btn btn-danger"
-                  >
-                    Borrar
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div>
+        <DxDataGrid
+          id="gridContainer1"
+          :row-alternation-enabled="true"
+          :hover-state-enabled="true"
+          :word-wrap-enabled="true"
+          :data-source="editoriales"
+          key-expr="id"
+          :show-borders="true"
+        >
+          <DxPaging :page-size="10" />
+          <DxExport :enabled="true" />
+          <DxFilterRow :visible="true" />
+          <DxGrouping :auto-expand-all="true" />
+          <DxGroupPanel :visible="true" :allow-column-dragging="true" />
+          <DxScrolling row-rendering-mode="virtual" />
+          <DxPager
+            :allowed-page-sizes="[10, 20, 50]"
+            :display-mode="full"
+            :show-info="true"
+            :show-navigation-buttons="true"
+            :show-page-size-selector="true"
+            :visible="true"
+          />
+          <DxColumn data-field="id" caption="Id" :width="150" />
+          <DxColumn data-field="nombre" caption="Autor" />
+        </DxDataGrid>
       </div>
     </div>
   </div>
